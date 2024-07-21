@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    * {
+        @apply m-0 p-0 box-border;
+    }
+
+    /* Color Themes, 400 for primary, 300 for gradient-from and 700 for gradient-to */
+
+    /* Default Theme - Slate */
+    .slate {
+        --primary-box: 148, 163, 184;
+        --primary-box-gradient-from: 203, 213, 225;
+        --primary-box-gradient-to: 51, 65, 85;
+    }
+
+    .green {
+        --primary-box: 74, 222, 128;
+        --primary-box-gradient-from: 134, 239, 172;
+        --primary-box-gradient-to: 21, 128, 61;
+    }
+
+    .red {
+        --primary-box: 248, 113, 113;
+        --primary-box-gradient-from: 252, 165, 165;
+        --primary-box-gradient-to: 185, 28, 28;
+    }
+
+    .amber {
+        --primary-box: 251, 191, 36;
+        --primary-box-gradient-from: 252, 211, 77;
+        --primary-box-gradient-to: 180, 83, 9;
+    }
+
+    .blue {
+        --primary-box: 96, 165, 250;
+        --primary-box-gradient-from: 147, 197, 253;
+        --primary-box-gradient-to: 29, 78, 216;
+    }
+}
