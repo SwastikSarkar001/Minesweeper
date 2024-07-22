@@ -100,5 +100,7 @@ export default function Box({ bomb = false, size, noOfBombs = -1 }) {
 }
 
 Box.propTypes = {
-	bomb: PropTypes.bool
+	bomb: PropTypes.bool,
+	size: PropTypes.number.isRequired,
+	noOfBombs: PropTypes.number
 }

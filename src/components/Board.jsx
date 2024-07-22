@@ -26,7 +26,7 @@ export default function Board({ boxes }) {
       {
         [...Array(boxCount).keys()].map((value) => {
           return (
-            <Box key={value} size={boardSize/Math.sqrt(boxCount)} noOfBombs={5} />
+            <Box key={value} size={boardSize/Math.sqrt(boxCount)} noOfBombs={5} onClick={() => console.log(value)} />
           )
         })
       }
