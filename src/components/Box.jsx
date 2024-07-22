@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from 'react'
+import React, { useReducer, useState, forwardRef, useImperativeHandle, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Flag from '../assets/Flag'
 import Guess from '../assets/Guess'
@@ -53,54 +53,66 @@ function reducer(state, newStatus) {
 		let s = newStatus.toString(2).padStart(3, '0').split('')
 		// console.log(s)
 		
-		const newState = { isOpened: !!(s[0] & s[1]), isFlagged: !!(s[0] & ~s[1]), isGuessed: !!(~s[0] & s[1]), hasBomb: state.hasBomb }
+		const newState = { isOpened: !!(s[0] & s[1]), isFlagged: !!(s[0] & ~s[1]), isGuessed: !!(~s[0] & s[1]), hasMine: state.hasMine }
 		// console.log(newState)
 		return newState
 	}
 	else return state
 }
 
-export default function Box({ bomb = false, size, noOfBombs = -1 }) {
+function Box({ mine = false, size }, ref) {
+	const btnRef = useRef(null)
 	const initProps = {
 		isOpened: false,
 		isFlagged: false,
 		isGuessed: false,
-		hasBomb: bomb
+		hasMine: mine
 	}
 	const newSize = size-24
 	const [boxProps, dispatch] = useReducer(reducer, initProps)
-	const [status, setStatus] = useState(boxProps.hasBomb ? 1 : 0)
+	const [status, setStatus] = useState(boxProps.hasMine ? 1 : 0)
 	const setStatusFlag = (newStatus) => {
 		setStatus(newStatus)
 		dispatch(newStatus)
 	}
 	const btnClicked = (e) => {
 		if (status === 0 || status === 1) {
-			e.target.disabled = true
-			setStatusFlag(boxProps.hasBomb ? 7 : 6)
+			e.disabled = true
+			setStatusFlag(boxProps.hasMine ? 7 : 6)
 		}
 	}
 	const btnContextClicked = (e) => {
 		e.preventDefault()
-		if (status === 0 || status === 1) setStatusFlag(boxProps.hasBomb ? 5 : 4)
-		else if (status === 2 || status === 3) setStatusFlag(boxProps.hasBomb ? 1 : 0)
-		else if (status === 4 || status === 5) setStatusFlag(boxProps.hasBomb ? 3 : 2)
+		if (status === 0 || status === 1) setStatusFlag(boxProps.hasMine ? 5 : 4)
+		else if (status === 2 || status === 3) setStatusFlag(boxProps.hasMine ? 1 : 0)
+		else if (status === 4 || status === 5) setStatusFlag(boxProps.hasMine ? 3 : 2)
 	}
+	const [noOfMines, setMines] = useState(-1)
+	useImperativeHandle(ref, () => ({
+		hasMine: () => boxProps.hasMine,
+		clickBtn: () => btnClicked(btnRef.current),
+		element: () => btnRef.current,
+		setDisplayNo: (number) => setMines(number),
+		getDisplayNo: () => noOfMines
+	}))
   return (
     <button
+			ref={btnRef}
 			className='flex cursor-pointer disabled:cursor-auto size-max relative rounded-[10%] p-3 enabled:bg-gradient-to-br enabled:from-primary-lighter enabled:from-20% enabled:to-primary-darker disabled:bg-primary disabled:shadow-disabled disabled:pointer-events-none enabled:before:absolute enabled:before:inset-[12%] enabled:before:rounded-[10%] enabled:before:content-[""] enabled:before:bg-primary'
 			onClick={btnClicked}
 			onContextMenu={btnContextClicked}
 		>
-      { boxProps.isOpened ? boxProps.hasBomb ? <Mine size={newSize} /> : <div style={{width: newSize+'px', height: newSize+'px', fontSize: newSize+'px', color: colors[noOfBombs]}} className='relative z-10 items-center leading-[1] justify-center font-bold font-rowdies'>{ noOfBombs > 0 && noOfBombs }</div> :
+      { boxProps.isOpened ? boxProps.hasMine ? <Mine size={newSize} /> : <div style={{width: newSize+'px', height: newSize+'px', fontSize: newSize+'px', color: colors[noOfMines]}} className='relative z-10 items-center leading-[1] justify-center font-bold font-rowdies'>{ noOfMines > 0 && noOfMines }</div> :
 				boxProps.isFlagged ? <Flag size={newSize} /> : boxProps.isGuessed ? <Guess size={newSize} /> : <div style={{width: newSize+'px', height: newSize+'px'}} />
 			}
     </button>
   )
 }
 
-Box.propTypes = {
-	bomb: PropTypes.bool,
-	size: PropTypes.number.isRequired,
-	noOfBombs: PropTypes.number
-}
+// Box.propTypes = {
+// 	mine: PropTypes.bool,
+// 	size: PropTypes.number.isRequired,
+// 	noOfMines: PropTypes.number
+// }
+
+export default forwardRef(Box)
